@@ -1,26 +1,23 @@
 # Clans
 
-Plugin Paper 1.21.11 per la gestione dei clan.
+Clans is a Paper 1.21.11 plugin that provides a modular foundation for a clan system.
 
-## Requisiti
+## Requirements
 
-- Java 21
-- Paper 1.21.11
+- Java 21  
+- Paper 1.21.11  
 
----
+## Current Structure
 
-## Struttura attuale
+The plugin is built with a simple and clean architecture.
 
-it.battleforge.clans
-├─ ClansPlugin.java # Main del plugin
-├─ command/
-│ ├─ ClansCommand.java # Comando principale (/clans)
-│ ├─ SubCommand.java # Interfaccia per i sottocomandi
-│ └─ sub/
-│ └─ HelpSubCommand.java # /clans listacomandi
-├─ message/
-│ └─ Messages.java # Gestione centralizzata dei messaggi
-└─ service/
+The main class (`ClansPlugin`) is responsible only for initialization and command registration.
+
+The `/clans` command acts as a root dispatcher. Each subcommand is implemented in its own class to keep the code organized and easy to extend.
+
+All messages are handled through a dedicated message utility class to ensure consistent formatting and easier future changes.
+
+The actual clan logic will be implemented inside a service layer, keeping command handling separated from business logic.
 
 ## Build
 
