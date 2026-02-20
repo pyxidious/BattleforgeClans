@@ -1,33 +1,24 @@
 package it.battleforge.clans;
 
+import it.battleforge.clans.command.ClansCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import it.battleforge.clans.command.ClansCommand;
+import java.util.Objects;
 
 public final class ClansPlugin extends JavaPlugin {
 
-    private static ClansPlugin instance;
-
-    public static ClansPlugin getInstance() {
-        return instance;
-    }
-
     @Override
     public void onEnable() {
-        instance = this;
-
         saveDefaultConfig();
 
-        getCommand("clans").setExecutor(new ClansCommand());
+        Objects.requireNonNull(getCommand("clans"), "Comando 'clans' mancante in plugin.yml")
+                .setExecutor(new ClansCommand());
 
-        getLogger().info("Clans è stato abilitato correttamente!");
+        getLogger().info("Clans abilitato!");
     }
 
     @Override
     public void onDisable() {
-        // Qui in futuro chiuderemo database o salveremo dati
-
-        getLogger().info("Clans è stato disabilitato!");
-        instance = null;
+        getLogger().info("Clans disabilitato!");
     }
 }
