@@ -2,6 +2,7 @@ package it.battleforge.clans.command;
 
 import it.battleforge.clans.command.sub.*;
 import it.battleforge.clans.service.ClanService;
+import it.battleforge.clans.message.MessageManager;
 import it.battleforge.clans.message.Messages;
 import org.bukkit.command.*;
 
@@ -10,8 +11,10 @@ import java.util.*;
 public final class ClansCommand implements CommandExecutor {
 
     private final Map<String, SubCommand> map = new HashMap<>();
+    private final MessageManager messages;
 
-    public ClansCommand(ClanService service) {
+    public ClansCommand(ClanService service, MessageManager messages) {
+        this.messages = messages;
         register(new HelpSubCommand());
         register(new CreateSubCommand(service));
         register(new InviteSubCommand(service));

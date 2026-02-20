@@ -1,6 +1,7 @@
 package it.battleforge.clans.command.sub;
 
 import it.battleforge.clans.command.SubCommand;
+import it.battleforge.clans.message.MessageManager;
 import it.battleforge.clans.message.Messages;
 import it.battleforge.clans.service.ClanService;
 import org.bukkit.command.CommandSender;
@@ -10,10 +11,13 @@ import java.util.List;
 
 public final class LeaveSubCommand implements SubCommand {
 
-    private final ClanService service;
 
-    public LeaveSubCommand(ClanService service) {
+    private final ClanService service;
+    private final MessageManager messages;
+
+    public LeaveSubCommand(ClanService service, MessageManager messages) {
         this.service = service;
+        this.messages = messages;
     }
 
     @Override public String name() { return "leave"; }
@@ -21,16 +25,17 @@ public final class LeaveSubCommand implements SubCommand {
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
+
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Messages.err("Only players can use this command."));
+            sender.sendMessage(messages.get("error.player-only"));
             return true;
         }
 
         ClanService.LeaveResult res = service.leave(player.getUniqueId());
         switch (res) {
-            case OK -> sender.sendMessage(Messages.ok("You left the clan."));
-            case NOT_IN_CLAN -> sender.sendMessage(Messages.err("You are not in a clan."));
-            case LEADER_CANNOT_LEAVE -> sender.sendMessage(Messages.err("The leader cannot leave. Use /clans delete (or implement transfer)."));
+            case OK -> sender.sendMessage(messages.get("success.clan-left"));
+            case NOT_IN_CLAN -> sender.sendMessage(messages.get("error.not-in-clan"));
+            case LEADER_CANNOT_LEAVE -> sender.sendMessage(messages.get("error.leader-cannot-leave"));
         }
 
         return true;

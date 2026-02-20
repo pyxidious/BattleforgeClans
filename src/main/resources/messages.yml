@@ -1,0 +1,23 @@
+prefix: "<gold>[Battleforge Clans]</gold> "
+
+error:
+  player-only: "<red>Solo i giocatori possono usare questo comando."
+  not-in-clan: "<red>Non fai parte di alcun clan."
+  already-in-clan: "<red>Sei già in un clan."
+  name-taken: "<red>Esiste già un clan con questo nome."
+  invalid-name: "<red>Nome clan non valido."
+  not-leader: "<red>Solo il capo-clan può usare questo comando."
+  leader-cannot-leave: "<red>Il capo-clan non può abbandonare il clan."
+  no-invite: "<red>Non hai inviti in sospeso."
+  target-not-found: "<red>Giocatore non trovato (deve essere online)."
+
+success:
+  clan-created: "<green>Clan creato con successo!"
+  clan-deleted: "<green>Clan eliminato."
+  clan-left: "<green>Hai abbandonato il clan."
+  invite-sent: "<green>Invito inviato a {player}."
+  invite-accepted: "<green>Sei entrato nel clan."
+  player-kicked: "<green>Hai espulso {player} dal clan."
+
+info:
+  invited: "<yellow>Hai ricevuto un invito a un clan. Usa /clans accept per entrare."

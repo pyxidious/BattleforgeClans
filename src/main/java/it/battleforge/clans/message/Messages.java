@@ -7,7 +7,7 @@ public final class Messages {
     private Messages() {}
 
     private static final Component PREFIX =
-            Component.text("[Clans] ").color(NamedTextColor.GOLD);
+            Component.text("Battleforge Clans > ").color(NamedTextColor.GOLD);
 
     public static Component ok(String text) {
         return PREFIX.append(Component.text(text).color(NamedTextColor.GREEN));
