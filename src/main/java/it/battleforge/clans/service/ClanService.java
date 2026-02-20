@@ -250,7 +250,7 @@ public AssignRoleResult assignRole(UUID leader, UUID target, String roleName) {
 }
 
     // --- Result enums ---
-    public enum CreateResult { OK, NOT_IN_CLAN, NOT_LEADER, INVALID_NAME, NAME_TOO_LONG, ALREADY_EXISTS }
+    public enum CreateResult { OK, ALREADY_IN_CLAN, NAME_TAKEN, NOT_IN_CLAN, NOT_LEADER, INVALID_NAME, NAME_TOO_LONG, ALREADY_EXISTS }
     public enum InviteResult { OK, NOT_IN_CLAN, NOT_LEADER, TARGET_ALREADY_IN_CLAN, TARGET_ALREADY_INVITED }
     public enum AcceptInviteResult { OK, NO_INVITE, ALREADY_IN_CLAN, CLAN_NO_LONGER_EXISTS }
     public enum DeleteResult { OK, NOT_IN_CLAN, NOT_LEADER }
