@@ -40,4 +40,12 @@ public final class MessageManager {
 
         return mini.deserialize(prefix + message);
     }
+
+        public String getRawPrefix() {
+        return config.getString("prefix", "");
+    }
+
+    public java.util.List<String> getStringList(String path) {
+        return config.getStringList(path);
+    }
 }

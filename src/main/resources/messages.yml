@@ -1,7 +1,8 @@
-prefix: "<gold>[Battleforge Clans]</gold> "
+prefix: "<gold>[Clans]</gold> "
 
 error:
   player-only: "<red>Solo i giocatori possono usare questo comando."
+  usage: "<yellow>Uso corretto: {usage}"
   not-in-clan: "<red>Non fai parte di alcun clan."
   already-in-clan: "<red>Sei già in un clan."
   name-taken: "<red>Esiste già un clan con questo nome."
@@ -9,15 +10,35 @@ error:
   not-leader: "<red>Solo il capo-clan può usare questo comando."
   leader-cannot-leave: "<red>Il capo-clan non può abbandonare il clan."
   no-invite: "<red>Non hai inviti in sospeso."
+  clan-no-longer-exists: "<red>Quel clan non esiste più."
   target-not-found: "<red>Giocatore non trovato (deve essere online)."
+  target-already-in-clan: "<red>Quel giocatore è già in un clan."
+  target-already-invited: "<red>Quel giocatore ha già un invito in sospeso."
+  cannot-kick-self: "<red>Non puoi espellere te stesso."
+  target-not-in-your-clan: "<red>Quel giocatore non è nel tuo clan."
+  unknown-subcommand: "<red>Sottocomando sconosciuto. Usa /clans listacomandi"
 
 success:
-  clan-created: "<green>Clan creato con successo!"
+  clan-created: "<green>Clan creato: <white>{clan}</white>"
   clan-deleted: "<green>Clan eliminato."
   clan-left: "<green>Hai abbandonato il clan."
-  invite-sent: "<green>Invito inviato a {player}."
-  invite-accepted: "<green>Sei entrato nel clan."
-  player-kicked: "<green>Hai espulso {player} dal clan."
+  invite-sent: "<green>Invito inviato a <white>{player}</white>."
+  invite-accepted: "<green>Sei entrato nel clan!"
+  player-kicked: "<green>Hai espulso <white>{player}</white> dal clan."
 
 info:
-  invited: "<yellow>Hai ricevuto un invito a un clan. Usa /clans accept per entrare."
+  invited: "<yellow>Hai ricevuto un invito a un clan. Usa <white>/clans accept</white> per entrare."
+  kicked: "<yellow>Sei stato espulso dal clan."
+  clan-deleted-by-leader: "<yellow>Il tuo clan è stato eliminato dal capo-clan."
+
+help:
+  header: "<gold>===== Comandi Clans =====</gold>"
+  lines:
+    - "<yellow>/clans listacomandi</yellow> <gray>- Mostra questa lista</gray>"
+    - "<yellow>/clans create <nome></yellow> <gray>- Crea un clan</gray>"
+    - "<yellow>/clans invite <giocatore></yellow> <gray>- Invita un giocatore</gray>"
+    - "<yellow>/clans accept</yellow> <gray>- Accetta un invito</gray>"
+    - "<yellow>/clans kick <giocatore></yellow> <gray>- Espelli un membro</gray>"
+    - "<yellow>/clans leave</yellow> <gray>- Abbandona il clan</gray>"
+    - "<yellow>/clans delete</yellow> <gray>- Elimina il clan (capo-clan)</gray>"
+  footer: "<gold>=========================</gold>"

@@ -1,7 +1,7 @@
 package it.battleforge.clans.command.sub;
 
 import it.battleforge.clans.command.SubCommand;
-import it.battleforge.clans.message.Messages;
+import it.battleforge.clans.message.MessageManager;
 import it.battleforge.clans.service.ClanService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -11,9 +11,11 @@ import java.util.List;
 public final class CreateSubCommand implements SubCommand {
 
     private final ClanService service;
+    private final MessageManager messages;
 
-    public CreateSubCommand(ClanService service) {
+    public CreateSubCommand(ClanService service, MessageManager messages) {
         this.service = service;
+        this.messages = messages;
     }
 
     @Override public String name() { return "create"; }
@@ -22,12 +24,12 @@ public final class CreateSubCommand implements SubCommand {
     @Override
     public boolean execute(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Messages.err("Only players can use this command."));
+            sender.sendMessage(messages.get("error.player-only"));
             return true;
         }
 
         if (args.length < 2) {
-            sender.sendMessage(Messages.warn("Usage: /clans create <name>"));
+            sender.sendMessage(messages.get("error.usage", "usage", "/clans create <nome>"));
             return true;
         }
 
@@ -35,12 +37,11 @@ public final class CreateSubCommand implements SubCommand {
 
         ClanService.CreateResult res = service.createClan(player.getUniqueId(), clanName);
         switch (res) {
-            case OK -> sender.sendMessage(Messages.ok("Clan created: " + clanName));
-            case INVALID_NAME -> sender.sendMessage(Messages.err("Invalid clan name."));
-            case NAME_TAKEN -> sender.sendMessage(Messages.err("A clan with that name already exists."));
-            case ALREADY_IN_CLAN -> sender.sendMessage(Messages.err("You are already in a clan."));
+            case OK -> sender.sendMessage(messages.get("success.clan-created", "clan", clanName));
+            case INVALID_NAME -> sender.sendMessage(messages.get("error.invalid-name"));
+            case NAME_TAKEN -> sender.sendMessage(messages.get("error.name-taken"));
+            case ALREADY_IN_CLAN -> sender.sendMessage(messages.get("error.already-in-clan"));
         }
-
         return true;
     }
 }

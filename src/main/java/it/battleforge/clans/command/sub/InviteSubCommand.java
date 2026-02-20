@@ -1,7 +1,7 @@
 package it.battleforge.clans.command.sub;
 
 import it.battleforge.clans.command.SubCommand;
-import it.battleforge.clans.message.Messages;
+import it.battleforge.clans.message.MessageManager;
 import it.battleforge.clans.service.ClanService;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -12,9 +12,11 @@ import java.util.List;
 public final class InviteSubCommand implements SubCommand {
 
     private final ClanService service;
+    private final MessageManager messages;
 
-    public InviteSubCommand(ClanService service) {
+    public InviteSubCommand(ClanService service, MessageManager messages) {
         this.service = service;
+        this.messages = messages;
     }
 
     @Override public String name() { return "invite"; }
@@ -23,33 +25,32 @@ public final class InviteSubCommand implements SubCommand {
     @Override
     public boolean execute(CommandSender sender, String[] args) {
         if (!(sender instanceof Player leader)) {
-            sender.sendMessage(Messages.err("Only players can use this command."));
+            sender.sendMessage(messages.get("error.player-only"));
             return true;
         }
 
         if (args.length < 2) {
-            sender.sendMessage(Messages.warn("Usage: /clans invite <player>"));
+            sender.sendMessage(messages.get("error.usage", "usage", "/clans invite <giocatore>"));
             return true;
         }
 
         Player target = Bukkit.getPlayerExact(args[1]);
         if (target == null) {
-            sender.sendMessage(Messages.err("Player not found (must be online)."));
+            sender.sendMessage(messages.get("error.target-not-found"));
             return true;
         }
 
         ClanService.InviteResult res = service.invite(leader.getUniqueId(), target.getUniqueId());
         switch (res) {
             case OK -> {
-                sender.sendMessage(Messages.ok("Invite sent to " + target.getName() + "."));
-                target.sendMessage(Messages.info("You have been invited to a clan. Use /clans accept to join."));
+                sender.sendMessage(messages.get("success.invite-sent", "player", target.getName()));
+                target.sendMessage(messages.get("info.invited"));
             }
-            case NOT_IN_CLAN -> sender.sendMessage(Messages.err("You are not in a clan."));
-            case NOT_LEADER -> sender.sendMessage(Messages.err("Only the clan leader can invite."));
-            case TARGET_ALREADY_IN_CLAN -> sender.sendMessage(Messages.err("That player is already in a clan."));
-            case TARGET_ALREADY_INVITED -> sender.sendMessage(Messages.err("That player already has a pending invite."));
+            case NOT_IN_CLAN -> sender.sendMessage(messages.get("error.not-in-clan"));
+            case NOT_LEADER -> sender.sendMessage(messages.get("error.not-leader"));
+            case TARGET_ALREADY_IN_CLAN -> sender.sendMessage(messages.get("error.target-already-in-clan"));
+            case TARGET_ALREADY_INVITED -> sender.sendMessage(messages.get("error.target-already-invited"));
         }
-
         return true;
     }
 }

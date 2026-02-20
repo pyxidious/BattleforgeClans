@@ -2,7 +2,6 @@ package it.battleforge.clans.command.sub;
 
 import it.battleforge.clans.command.SubCommand;
 import it.battleforge.clans.message.MessageManager;
-import it.battleforge.clans.message.Messages;
 import it.battleforge.clans.service.ClanService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
