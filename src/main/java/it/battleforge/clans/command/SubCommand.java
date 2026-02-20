@@ -7,6 +7,5 @@ import java.util.List;
 public interface SubCommand {
     String name();
     List<String> aliases();
-    String permission(); // può essere null
     boolean execute(CommandSender sender, String[] args);
 }
