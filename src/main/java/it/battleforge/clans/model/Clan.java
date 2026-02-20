@@ -4,12 +4,19 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import org.bukkit.Location;
+import java.util.HashMap;
+import java.util.Map;
+
 
 public final class Clan {
     private final String name;          // nome "display"
     private final String key;           // nome normalizzato (lower) per lookup
     private final UUID leader;
     private final Set<UUID> members = new HashSet<>(); // include leader
+    private final Map<String, ClanRole> roles = new HashMap<>();
+    private final Map<UUID, String> memberRole = new HashMap<>();
+    private Location home;
 
     public Clan(String name, UUID leader) {
         this.name = name;
@@ -18,6 +25,10 @@ public final class Clan {
         this.members.add(leader);
     }
 
+    public Map<String, ClanRole> getRoles() { return roles; }
+    public Map<UUID, String> getMemberRole() { return memberRole; }
+    public Location getHome() { return home; }
+    public void setHome(Location home) { this.home = home; }
     public String getName() { return name; }
     public String getKey() { return key; }
     public UUID getLeader() { return leader; }

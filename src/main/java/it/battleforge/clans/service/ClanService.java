@@ -1,17 +1,23 @@
 package it.battleforge.clans.service;
 
 import it.battleforge.clans.model.Clan;
+import it.battleforge.clans.model.ClanPermission;
+import it.battleforge.clans.model.ClanRole;
 
 import java.util.*;
 
+import org.bukkit.Location;
+
 public final class ClanService {
 
+    private final java.util.Set<java.util.UUID> clanChatMode = new java.util.HashSet<>();
     // clanKey -> clan
     private final Map<String, Clan> clans = new HashMap<>();
     // player -> clanKey
     private final Map<UUID, String> clanOf = new HashMap<>();
     // invitedPlayer -> clanKey
     private final Map<UUID, String> pendingInvite = new HashMap<>();
+
 
     public Optional<Clan> getClanByPlayer(UUID player) {
         String key = clanOf.get(player);
@@ -21,6 +27,125 @@ public final class ClanService {
 
     public Optional<Clan> getClanByName(String name) {
         return Optional.ofNullable(clans.get(Clan.normalize(name)));
+    }
+
+
+    // Clan Chat mode
+
+    public boolean isClanChatEnabled(java.util.UUID player) {
+        return clanChatMode.contains(player);
+    }
+
+    public boolean toggleClanChat(java.util.UUID player) {
+        if (clanChatMode.contains(player)) {
+            clanChatMode.remove(player);
+            return false; // OFF
+        } else {
+            clanChatMode.add(player);
+            return true; // ON
+        }
+    }
+
+    /* Permission */
+    public boolean hasPermission(UUID player, ClanPermission perm) {
+        Optional<Clan> clanOpt = getClanByPlayer(player);
+        if (clanOpt.isEmpty()) return false;
+
+        Clan clan = clanOpt.get();
+        if (clan.getLeader().equals(player)) return true; // leader = tutte
+
+        String roleKey = clan.getMemberRole().get(player);
+        if (roleKey == null) return false;
+
+        ClanRole role = clan.getRoles().get(roleKey);
+        return role != null && role.has(perm);
+    }
+
+    /* SetHome */
+    public enum SetHomeResult { OK, NOT_IN_CLAN, NO_PERMISSION }
+
+    public SetHomeResult setHome(UUID actor, Location loc) {
+        var clanOpt = getClanByPlayer(actor);
+        if (clanOpt.isEmpty()) return SetHomeResult.NOT_IN_CLAN;
+        if (!hasPermission(actor, ClanPermission.SET_HOME)) return SetHomeResult.NO_PERMISSION;
+        clanOpt.get().setHome(loc);
+        return SetHomeResult.OK;
+    }
+
+    public enum HomeResult { OK, NOT_IN_CLAN, HOME_NOT_SET }
+    public HomeResult getHome(UUID player) {
+        var clanOpt = getClanByPlayer(player);
+        if (clanOpt.isEmpty()) return HomeResult.NOT_IN_CLAN;
+        return clanOpt.get().getHome() == null ? HomeResult.HOME_NOT_SET : HomeResult.OK;
+    }
+
+    public Location homeLocation(UUID player) {
+        return getClanByPlayer(player).map(Clan::getHome).orElse(null);
+    }
+
+    // --- Roles ---
+    public enum CreateRoleResult { OK, NOT_IN_CLAN, NOT_LEADER, INVALID_NAME, ALREADY_EXISTS }
+    public CreateRoleResult createRole(UUID leader, String roleNameRaw) {
+        var clanOpt = getClanByPlayer(leader);
+        if (clanOpt.isEmpty()) return CreateRoleResult.NOT_IN_CLAN;
+        Clan clan = clanOpt.get();
+        if (!clan.getLeader().equals(leader)) return CreateRoleResult.NOT_LEADER;
+
+        String roleName = roleNameRaw == null ? "" : roleNameRaw.trim();
+        if (roleName.isEmpty()) return CreateRoleResult.INVALID_NAME;
+
+        String key = roleName.toLowerCase();
+        if (clan.getRoles().containsKey(key)) return CreateRoleResult.ALREADY_EXISTS;
+
+        clan.getRoles().put(key, new ClanRole(roleName));
+        return CreateRoleResult.OK;
+    }
+
+    public enum RolePermResult { OK, NOT_IN_CLAN, NOT_LEADER, ROLE_NOT_FOUND }
+    public RolePermResult setRolePermission(UUID leader, String roleName, ClanPermission perm, boolean enabled) {
+        var clanOpt = getClanByPlayer(leader);
+        if (clanOpt.isEmpty()) return RolePermResult.NOT_IN_CLAN;
+        Clan clan = clanOpt.get();
+        if (!clan.getLeader().equals(leader)) return RolePermResult.NOT_LEADER;
+
+        ClanRole role = clan.getRoles().get(roleName.toLowerCase());
+        if (role == null) return RolePermResult.ROLE_NOT_FOUND;
+
+        role.set(perm, enabled);
+        return RolePermResult.OK;
+    }
+
+    public enum AssignRoleResult { OK, NOT_IN_CLAN, NOT_LEADER, ROLE_NOT_FOUND, TARGET_NOT_IN_YOUR_CLAN }
+    public AssignRoleResult assignRole(UUID leader, UUID target, String roleName) {
+        var clanOpt = getClanByPlayer(leader);
+        if (clanOpt.isEmpty()) return AssignRoleResult.NOT_IN_CLAN;
+        Clan clan = clanOpt.get();
+        if (!clan.getLeader().equals(leader)) return AssignRoleResult.NOT_LEADER;
+
+        if (!clan.isMember(target)) return AssignRoleResult.TARGET_NOT_IN_YOUR_CLAN;
+
+        String key = roleName.toLowerCase();
+        if (!clan.getRoles().containsKey(key)) return AssignRoleResult.ROLE_NOT_FOUND;
+
+        clan.getMemberRole().put(target, key);
+        return AssignRoleResult.OK;
+    }
+
+    // --- Kick: ora permesso anche a sottoruoli abilitati ---
+    public KickResult kick(UUID actor, UUID target) {
+        Optional<Clan> clanOpt = getClanByPlayer(actor);
+        if (clanOpt.isEmpty()) return KickResult.NOT_IN_CLAN;
+
+        Clan clan = clanOpt.get();
+        boolean canKick = clan.getLeader().equals(actor) || hasPermission(actor, ClanPermission.KICK);
+        if (!canKick) return KickResult.NOT_LEADER; // riuso enum: significa "no permesso"
+
+        if (actor.equals(target)) return KickResult.CANNOT_KICK_SELF;
+        if (!clan.isMember(target)) return KickResult.TARGET_NOT_IN_YOUR_CLAN;
+
+        clan.removeMember(target);
+        clanOf.remove(target);
+        return KickResult.OK;
     }
 
     public boolean isInClan(UUID player) {
@@ -91,21 +216,6 @@ public final class ClanService {
 
         clans.remove(clan.getKey());
         return DeleteResult.OK;
-    }
-
-    public KickResult kick(UUID leader, UUID target) {
-        Optional<Clan> clanOpt = getClanByPlayer(leader);
-        if (clanOpt.isEmpty()) return KickResult.NOT_IN_CLAN;
-
-        Clan clan = clanOpt.get();
-        if (!clan.getLeader().equals(leader)) return KickResult.NOT_LEADER;
-
-        if (leader.equals(target)) return KickResult.CANNOT_KICK_SELF;
-        if (!clan.isMember(target)) return KickResult.TARGET_NOT_IN_YOUR_CLAN;
-
-        clan.removeMember(target);
-        clanOf.remove(target);
-        return KickResult.OK;
     }
 
     public LeaveResult leave(UUID player) {

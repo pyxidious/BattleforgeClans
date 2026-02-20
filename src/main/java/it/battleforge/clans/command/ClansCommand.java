@@ -26,6 +26,7 @@ public final class ClansCommand implements CommandExecutor {
         register(new KickSubCommand(service, messages));
         register(new LeaveSubCommand(service, messages));
         register(new DeleteSubCommand(service, messages));
+        register(new ChatSubCommand(service, messages));
     }
 
     private void register(SubCommand cmd) {

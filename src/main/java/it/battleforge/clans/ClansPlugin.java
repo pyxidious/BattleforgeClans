@@ -17,6 +17,7 @@ public final class ClansPlugin extends JavaPlugin {
 
         saveDefaultConfig();
         saveResource("messages.yml", false);
+        getServer().getPluginManager().registerEvents(new it.battleforge.clans.listener.ChatListener(clanService, messageManager), this);
 
         this.messageManager = new MessageManager(this);
         this.clanService = new ClanService();
