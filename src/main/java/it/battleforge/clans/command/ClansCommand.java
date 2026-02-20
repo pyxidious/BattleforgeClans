@@ -27,6 +27,12 @@ public final class ClansCommand implements CommandExecutor {
         register(new LeaveSubCommand(service, messages));
         register(new DeleteSubCommand(service, messages));
         register(new ChatSubCommand(service, messages));
+        register(new SetHomeSubCommand(service, messages));
+        register(new HomeSubCommand(service, messages));
+        register(new RoleCreateSubCommand(service, messages));
+        register(new RolePermSubCommand(service, messages));
+        register(new RoleSetSubCommand(service, messages));
+        register(new RolesSubCommand(service, messages));
     }
 
     private void register(SubCommand cmd) {

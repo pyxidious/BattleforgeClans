@@ -60,10 +60,10 @@ public final class ChatListener implements Listener {
         if (clanOpt.isEmpty()) return;
 
         String clanName = clanOpt.get().getName();
+        String roleName = service.getRoleDisplay(player.getUniqueId());
 
-        // aggiunge prefisso al nome in chat pubblica
         event.renderer((source, sourceDisplayName, message, viewer) ->
-                mini.deserialize("<gold>[" + clanName + "]</gold> ")
+                mini.deserialize("<gold>[" + clanName + "]</gold> <aqua>[" + roleName + "]</aqua> ")
                         .append(sourceDisplayName)
                         .append(mini.deserialize("<gray>: </gray>"))
                         .append(message)

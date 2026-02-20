@@ -18,6 +18,16 @@ error:
   target-not-in-your-clan: "<red>Quel giocatore non è nel tuo clan."
   unknown-subcommand: "<red>Sottocomando sconosciuto. Usa /clans listacomandi"
   not-in-clan: "<red>Non fai parte di alcun clan.</red>"
+  no-permission: "<red>Non hai il permesso per farlo.</red>"
+  home-not-set: "<red>Il punto di ritrovo del clan non è stato impostato.</red>"
+  role-invalid-name: "<red>Nome ruolo non valido.</red>"
+  role-already-exists: "<red>Esiste già un ruolo con quel nome.</red>"
+  role-not-found: "<red>Ruolo non trovato.</red>"
+  target-not-in-your-clan: "<red>Quel giocatore non è nel tuo clan.</red>"
+  perm-invalid: "<red>Permesso non valido. Valori: SET_HOME, KICK</red>"
+  toggle-required: "<red>Valore non valido. Usa on/off</red>"
+  clan-name-too-long: "<red>Il nome del clan non può superare i 10 caratteri.</red>"
+  role-name-too-long: "<red>Il nome del ruolo non può superare i 10 caratteri.</red>"
 
 success:
   clan-created: "<green>Clan creato: <white>{clan}</white>"
@@ -28,23 +38,38 @@ success:
   player-kicked: "<green>Hai espulso <white>{player}</white> dal clan."
   clan-chat-on: "<green>Chat clan attivata.</green>"
   clan-chat-off: "<yellow>Chat clan disattivata.</yellow>"
+  home-set: "<green>Punto di ritrovo impostato.</green>"
+  teleported-home: "<green>Teletrasportato al punto di ritrovo del clan.</green>"
+  role-created: "<green>Ruolo creato: <white>{role}</white></green>"
+  role-perm-set: "<green>Permesso <white>{perm}</white> per il ruolo <white>{role}</white> impostato su <white>{value}</white>.</green>"
+  role-assigned: "<green>Ruolo <white>{role}</white> assegnato a <white>{player}</white>.</green>"
 
 info:
   invited: "<yellow>Hai ricevuto un invito a un clan. Usa <white>/clans accept</white> per entrare."
   kicked: "<yellow>Sei stato espulso dal clan."
   clan-deleted-by-leader: "<yellow>Il tuo clan è stato eliminato dal capo-clan."
+  roles-header: "<gold>Ruoli disponibili:</gold>"
+  roles-line: "<yellow>- {role}</yellow>"
 
 clanchat:
   format: "<aqua>[CLAN]</aqua> <gold>[{clan}]</gold> <white>{player}:</white> <gray>{message}</gray>"
 
 help:
   header: "<gold>===== Comandi Clans =====</gold>"
+
   lines:
     - "<yellow>/clans listacomandi</yellow> <gray>- Mostra questa lista</gray>"
     - "<yellow>/clans create <nome></yellow> <gray>- Crea un clan</gray>"
+    - "<yellow>/clans delete</yellow> <gray>- Elimina il clan (solo capo-clan)</gray>"
     - "<yellow>/clans invite <giocatore></yellow> <gray>- Invita un giocatore</gray>"
     - "<yellow>/clans accept</yellow> <gray>- Accetta un invito</gray>"
-    - "<yellow>/clans kick <giocatore></yellow> <gray>- Espelli un membro</gray>"
+    - "<yellow>/clans kick <giocatore></yellow> <gray>- Espelli un membro (leader o ruolo abilitato)</gray>"
     - "<yellow>/clans leave</yellow> <gray>- Abbandona il clan</gray>"
-    - "<yellow>/clans delete</yellow> <gray>- Elimina il clan (capo-clan)</gray>"
+    - "<yellow>/clans chat</yellow> <gray>- Attiva/Disattiva la chat privata del clan</gray>"
+    - "<yellow>/clans sethome</yellow> <gray>- Imposta il punto di ritrovo del clan</gray>"
+    - "<yellow>/clans home</yellow> <gray>- Teletrasporto al punto di ritrovo</gray>"
+    - "<yellow>/clans rolecreate <ruolo></yellow> <gray>- Crea un nuovo ruolo (leader)</gray>"
+    - "<yellow>/clans roleperm <ruolo> <SET_HOME|KICK> <on|off></yellow> <gray>- Imposta un permesso al ruolo</gray>"
+    - "<yellow>/clans roleset <giocatore> <ruolo></yellow> <gray>- Assegna un ruolo a un membro</gray>"
+
   footer: "<gold>=========================</gold>"

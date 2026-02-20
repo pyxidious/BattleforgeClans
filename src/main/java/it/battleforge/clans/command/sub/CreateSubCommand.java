@@ -3,6 +3,8 @@ package it.battleforge.clans.command.sub;
 import it.battleforge.clans.command.SubCommand;
 import it.battleforge.clans.message.MessageManager;
 import it.battleforge.clans.service.ClanService;
+import it.battleforge.clans.service.ClanService.CreateResult;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -33,12 +35,14 @@ public final class CreateSubCommand implements SubCommand {
             return true;
         }
 
-        String clanName = args[1];
+        String clanNameRaw = args[1];
+        String clanName = clanNameRaw == null ? "" : clanNameRaw.trim();
 
         ClanService.CreateResult res = service.createClan(player.getUniqueId(), clanName);
         switch (res) {
             case OK -> sender.sendMessage(messages.get("success.clan-created", "clan", clanName));
             case INVALID_NAME -> sender.sendMessage(messages.get("error.invalid-name"));
+            case NAME_TOO_LONG -> sender.sendMessage(messages.get("error.clan-name-too-long"));
             case NAME_TAKEN -> sender.sendMessage(messages.get("error.name-taken"));
             case ALREADY_IN_CLAN -> sender.sendMessage(messages.get("error.already-in-clan"));
         }

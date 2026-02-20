@@ -41,6 +41,17 @@ public final class MessageManager {
         return mini.deserialize(prefix + message);
     }
 
+    public Component get(String path, java.util.Map<String, String> placeholders) {
+    String prefix = config.getString("prefix", "");
+    String message = config.getString(path, "<red>Messaggio non trovato: " + path);
+
+    String out = prefix + message;
+    for (var e : placeholders.entrySet()) {
+        out = out.replace("{" + e.getKey() + "}", e.getValue());
+    }
+    return mini.deserialize(out);
+}
+
     public String getRawPrefix() {
         return config.getString("prefix", "");
     }

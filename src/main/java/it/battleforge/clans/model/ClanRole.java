@@ -12,11 +12,10 @@ public final class ClanRole {
     }
 
     public String getName() { return name; }
-    public Set<ClanPermission> getPermissions() { return permissions; }
-
     public boolean has(ClanPermission perm) { return permissions.contains(perm); }
-    public void set(ClanPermission perm, boolean value) {
-        if (value) permissions.add(perm);
+
+    public void set(ClanPermission perm, boolean enabled) {
+        if (enabled) permissions.add(perm);
         else permissions.remove(perm);
     }
 }

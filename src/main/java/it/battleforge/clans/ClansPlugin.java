@@ -14,16 +14,21 @@ public final class ClansPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-
         saveDefaultConfig();
         saveResource("messages.yml", false);
-        getServer().getPluginManager().registerEvents(new it.battleforge.clans.listener.ChatListener(clanService, messageManager), this);
 
         this.messageManager = new MessageManager(this);
         this.clanService = new ClanService();
 
-        Objects.requireNonNull(getCommand("clans"))
+        Objects.requireNonNull(getCommand("clans"), "Command 'clans' missing in plugin.yml")
                 .setExecutor(new ClansCommand(clanService, messageManager));
+
+        getServer().getPluginManager().registerEvents(
+                new it.battleforge.clans.listener.ChatListener(clanService, messageManager),
+                this
+        );
+
+        getLogger().info("Clans abilitato!");
     }
 
     @Override
