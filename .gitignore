@@ -8,10 +8,9 @@ out/
 # Gradle local properties
 local.properties
 
-# =========================
-# VS Code
-# =========================
 .vscode/
+.deploy.ps1
+.deploy_portatile.ps1
 
 # =========================
 # OS Files
