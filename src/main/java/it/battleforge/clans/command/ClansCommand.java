@@ -1,59 +1,43 @@
 package it.battleforge.clans.command;
 
-import it.battleforge.clans.command.sub.*;
+import it.battleforge.clans.gui.impl.NoClanGui;
 import it.battleforge.clans.message.MessageManager;
 import it.battleforge.clans.service.ClanService;
+import it.battleforge.clans.util.InputManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import org.bukkit.entity.Player;
 
 public final class ClansCommand implements CommandExecutor {
 
-    private final Map<String, SubCommand> map = new HashMap<>();
+    private final ClanService service;
     private final MessageManager messages;
+    private final InputManager inputManager;
 
-    public ClansCommand(ClanService service, MessageManager messages) {
+    public ClansCommand(ClanService service, MessageManager messages, InputManager inputManager) {
+        this.service = service;
         this.messages = messages;
-
-        register(new HelpSubCommand(messages));
-        register(new CreateSubCommand(service, messages));
-        register(new InviteSubCommand(service, messages));
-        register(new AcceptSubCommand(service, messages));
-        register(new KickSubCommand(service, messages));
-        register(new LeaveSubCommand(service, messages));
-        register(new DeleteSubCommand(service, messages));
-        register(new ChatSubCommand(service, messages));
-        register(new SetHomeSubCommand(service, messages));
-        register(new HomeSubCommand(service, messages));
-        register(new RoleCreateSubCommand(service, messages));
-        register(new RolePermSubCommand(service, messages));
-        register(new RoleSetSubCommand(service, messages));
-        register(new RolesSubCommand(service, messages));
-    }
-
-    private void register(SubCommand cmd) {
-        map.put(cmd.name().toLowerCase(Locale.ROOT), cmd);
-        for (String a : cmd.aliases()) map.put(a.toLowerCase(Locale.ROOT), cmd);
+        this.inputManager = inputManager;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-
-        if (args.length == 0) {
-            sender.sendMessage(messages.get("error.usage", "usage", "/clans listacomandi"));
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(messages.get("error.player-only"));
             return true;
         }
 
-        SubCommand sub = map.get(args[0].toLowerCase(Locale.ROOT));
-        if (sub == null) {
-            sender.sendMessage(messages.get("error.unknown-subcommand"));
-            return true;
+        // Se il giocatore ha un clan, in futuro apri MainClanGui
+        // Altrimenti apri NoClanGui
+        if (service.isInClan(player.getUniqueId())) {
+            it.battleforge.clans.gui.impl.MainClanGui gui = new it.battleforge.clans.gui.impl.MainClanGui(service, messages, inputManager);
+            gui.open(player);
+        } else {
+            NoClanGui gui = new NoClanGui(service, messages, inputManager);
+            gui.open(player);
         }
 
-        return sub.execute(sender, args);
+        return true;
     }
 }

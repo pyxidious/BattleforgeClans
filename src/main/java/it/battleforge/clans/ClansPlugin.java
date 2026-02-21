@@ -11,6 +11,7 @@ public final class ClansPlugin extends JavaPlugin {
 
     private ClanService clanService;
     private MessageManager messageManager;
+    private it.battleforge.clans.util.InputManager inputManager;
 
     @Override
     public void onEnable() {
@@ -19,12 +20,21 @@ public final class ClansPlugin extends JavaPlugin {
 
         this.messageManager = new MessageManager(this);
         this.clanService = new ClanService();
+        this.inputManager = new it.battleforge.clans.util.InputManager();
 
         Objects.requireNonNull(getCommand("clans"), "Command 'clans' missing in plugin.yml")
-                .setExecutor(new ClansCommand(clanService, messageManager));
+                .setExecutor(new ClansCommand(clanService, messageManager, inputManager));
 
         getServer().getPluginManager().registerEvents(
                 new it.battleforge.clans.listener.ChatListener(clanService, messageManager),
+                this
+        );
+        getServer().getPluginManager().registerEvents(
+                new it.battleforge.clans.gui.GuiManager(),
+                this
+        );
+        getServer().getPluginManager().registerEvents(
+                inputManager,
                 this
         );
 
