@@ -131,6 +131,14 @@ public final class ClanService {
         return AcceptInviteResult.OK;
     }
 
+    public Optional<String> getPendingInvite(UUID player) {
+        return Optional.ofNullable(pendingInvite.get(player));
+    }
+
+    public boolean declineInvite(UUID player) {
+        return pendingInvite.remove(player) != null;
+    }
+
     public DeleteResult deleteClan(UUID leader) {
         Optional<Clan> clanOpt = getClanByPlayer(leader);
         if (clanOpt.isEmpty()) return DeleteResult.NOT_IN_CLAN;

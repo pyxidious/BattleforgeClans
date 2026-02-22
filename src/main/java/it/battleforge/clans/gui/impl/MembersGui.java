@@ -82,13 +82,11 @@ public class MembersGui implements Gui {
             List<String> lore = new ArrayList<>();
             lore.add("<gray>Ruolo: <white>" + roleDisplay);
             
-            if (isLeader && !isMemberLeader && !memberId.equals(player.getUniqueId())) {
-                lore.add("");
-                lore.add("<blue>Click Sinistro per cambiare ruolo");
-            }
-            if (canKick && !isMemberLeader && !memberId.equals(player.getUniqueId())) {
-                if (!isLeader) lore.add("");
-                lore.add("<red>Shift-Click per espellere");
+            if (!isMemberLeader && !memberId.equals(player.getUniqueId())) {
+                if (isLeader || canKick) {
+                    lore.add("");
+                    lore.add("<blue>Click per gestire");
+                }
             }
 
             builder.lore(lore);
@@ -158,37 +156,12 @@ public class MembersGui implements Gui {
         if (slot >= 9 && slot < 9 + membersList.size()) {
             UUID targetId = membersList.get(slot - 9);
             
-            if (event.isShiftClick() && canKick) {
-                ClanService.KickResult res = service.kick(player.getUniqueId(), targetId);
-                if (res == ClanService.KickResult.OK) {
-                    Player targetPlayer = Bukkit.getPlayer(targetId);
-                    if (targetPlayer != null) {
-                        targetPlayer.sendMessage(messages.get("error.kicked", "clan", clanOpt.get().getName()));
-                    }
-                    player.sendMessage(messages.get("success.player-kicked", "player", Bukkit.getOfflinePlayer(targetId).getName()));
-                    open(player); // Aggiorna la GUI
-                } else if (res == ClanService.KickResult.NOT_LEADER) {
-                    player.sendMessage(messages.get("error.not-leader"));
-                } else if (res == ClanService.KickResult.CANNOT_KICK_SELF) {
-                    player.sendMessage(messages.get("error.cannot-kick-self"));
+            boolean isMemberLeader = clan.getLeader().equals(targetId);
+
+            if (!isMemberLeader && !targetId.equals(player.getUniqueId())) {
+                if (isLeader || canKick) {
+                    new MemberManageGui(service, messages, inputManager, targetId).open(player);
                 }
-            } else if (event.isLeftClick() && !event.isShiftClick() && isLeader) {
-                player.closeInventory();
-                player.sendMessage(MiniMessage.miniMessage().deserialize("<white>Scrivi in chat il nome del ruolo da assegnare a <yellow>" + Bukkit.getOfflinePlayer(targetId).getName() + "<white>, oppure scrivi <red>annulla<white>."));
-                
-                inputManager.requestInput(player, (input) -> {
-                    if (input.equalsIgnoreCase("annulla")) {
-                        player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Operazione annullata."));
-                        return;
-                    }
-                    
-                    ClanService.AssignRoleResult res = service.assignRole(player.getUniqueId(), targetId, input);
-                    switch (res) {
-                        case OK -> player.sendMessage(messages.get("success.role-set", "role", input)); // assume message exists or defaults to raw
-                        case ROLE_NOT_FOUND -> player.sendMessage(messages.get("error.role-not-found"));
-                        case NOT_LEADER -> player.sendMessage(messages.get("error.no-permission"));
-                    }
-                });
             }
         }
     }

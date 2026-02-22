@@ -74,9 +74,7 @@ public class NoClanGui implements Gui {
             });
         } else if (slot == 15) {
             player.closeInventory();
-            // TODO: Aprire l'interfaccia degli inviti ricevuti
-            // Momentaneamente diamo un feedback
-            player.sendMessage(MiniMessage.miniMessage().deserialize("<yellow>La GUI degli inviti sarà implementata a breve! Per ora usa <white>/clan accept"));
+            new InvitesGui(service, messages, inputManager).open(player);
         }
     }
 
