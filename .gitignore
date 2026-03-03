@@ -8,6 +8,7 @@ out/
 # Gradle local properties
 local.properties
 
+bin/
 .vscode/
 .deploy.ps1
 .deploy_portatile.ps1
