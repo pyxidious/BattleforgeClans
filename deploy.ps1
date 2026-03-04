@@ -2,10 +2,10 @@ $ErrorActionPreference = "Stop"
 
 # --- Paths ---
 $projectDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$serverDir = "C:\Users\emima\Desktop\Dev\TestServer"
+$serverDir = "C:\Users\proti\Desktop\BattleForge Dev\PaperSpigot 1.21.11"
 $pluginsDir = Join-Path $serverDir "plugins"
 
-$javaExe = "C:\Program Files\Eclipse Adoptium\jdk-21.0.9.10-hotspot\bin\java.exe"
+$javaExe = "C:\Program Files\Eclipse Adoptium\jdk-21.0.10.7-hotspot\bin\java.exe"
 $paperJar = "paper-1.21.11-117.jar"
 
 # --- Build ---

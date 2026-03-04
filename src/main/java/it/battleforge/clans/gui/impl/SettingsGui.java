@@ -1,5 +1,6 @@
 package it.battleforge.clans.gui.impl;
 
+import it.battleforge.clans.ClansPlugin;
 import it.battleforge.clans.gui.Gui;
 import it.battleforge.clans.gui.ItemBuilder;
 import it.battleforge.clans.message.MessageManager;
@@ -109,10 +110,20 @@ public class SettingsGui implements Gui {
                 player.closeInventory();
                 ClanService.HomeTpResult res = service.canTeleportHome(player.getUniqueId());
                 if (res == ClanService.HomeTpResult.OK) {
+                    ClansPlugin plugin = ClansPlugin.getInstance();
+                    int combatSeconds = plugin.getHomeCombatSeconds();
+                    long remaining = plugin.getCombatManager().getRemainingSeconds(player.getUniqueId(), combatSeconds);
+                    if (remaining > 0) {
+                        player.sendMessage(messages.get("error.home-combat-cooldown", "seconds", Long.toString(remaining)));
+                        return;
+                    }
+
                     player.teleportAsync(service.getHomeLocation(player.getUniqueId()))
                             .thenAccept(success -> {
                                 if (success) player.sendMessage(messages.get("success.home-teleport"));
                             });
+                } else if (res == ClanService.HomeTpResult.NO_PERMISSION) {
+                    player.sendMessage(messages.get("error.no-permission"));
                 } else if (res == ClanService.HomeTpResult.HOME_NOT_SET) {
                     player.sendMessage(messages.get("error.home-not-set"));
                 }

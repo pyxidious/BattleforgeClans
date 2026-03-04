@@ -5,5 +5,25 @@ api-version: '1.21'
 commands:
   clans:
     description: Comando principale del plugin Clans
-    usage: /clans
+    usage: /clans [home|save|reload|autosave]
     aliases: [clan]
+permissions:
+  clans.admin:
+    description: Permesso parent per tutti i comandi amministrativi di Clans.
+    default: op
+    children:
+      clans.admin.save: true
+      clans.admin.reload: true
+      clans.admin.autosave: true
+  clans.admin.save:
+    description: Permette /clans save
+    default: op
+  clans.admin.reload:
+    description: Permette /clans reload
+    default: op
+  clans.admin.autosave:
+    description: Permette /clans autosave
+    default: op
+  clans.command.home:
+    description: Permette di usare /clans home
+    default: true

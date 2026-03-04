@@ -1,35 +1,33 @@
 package it.battleforge.clans.model;
 
+import org.bukkit.Location;
+
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import org.bukkit.Location;
-import java.util.HashMap;
-import java.util.Map;
-import it.battleforge.clans.model.ClanRole;
-
 
 public final class Clan {
-    private final String name;          // nome "display"
-    private final String key;           // nome normalizzato (lower) per lookup
+    private final String name;
+    private final String key;
     private final UUID leader;
-    private final Set<UUID> members = new HashSet<>(); // include leader
+    private final Set<UUID> members = new HashSet<>();
     private final Map<String, ClanRole> roles = new HashMap<>();
     private final Map<UUID, String> memberRole = new HashMap<>();
     private Location home;
 
-public Clan(String name, UUID leader) {
-    this.name = name;
-    this.key = normalize(name);
-    this.leader = leader;
+    public Clan(String name, UUID leader) {
+        this.name = name;
+        this.key = normalize(name);
+        this.leader = leader;
 
-    this.members.add(leader);
+        this.members.add(leader);
 
-    // ruolo di default
-    this.roles.put("membro", new ClanRole("membro"));
-    this.memberRole.put(leader, "membro"); // opzionale, il leader non è influenzato comunque
-}
+        this.roles.put("membro", new ClanRole("membro", 0));
+        this.memberRole.put(leader, "membro");
+    }
 
     public Map<String, ClanRole> getRoles() { return roles; }
     public Map<UUID, String> getMemberRole() { return memberRole; }

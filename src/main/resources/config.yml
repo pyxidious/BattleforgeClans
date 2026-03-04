@@ -1,1 +1,7 @@
 # Clans plugin config
+autosave:
+  enabled: false
+  interval-seconds: 300
+
+home:
+  teleport-combat-seconds: 20

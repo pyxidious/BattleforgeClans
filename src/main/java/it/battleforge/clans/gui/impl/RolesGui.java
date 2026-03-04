@@ -4,7 +4,6 @@ import it.battleforge.clans.gui.Gui;
 import it.battleforge.clans.gui.ItemBuilder;
 import it.battleforge.clans.message.MessageManager;
 import it.battleforge.clans.model.Clan;
-import it.battleforge.clans.model.ClanPermission;
 import it.battleforge.clans.model.ClanRole;
 import it.battleforge.clans.service.ClanService;
 import it.battleforge.clans.util.InputManager;
@@ -16,6 +15,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,12 +46,10 @@ public class RolesGui implements Gui {
 
         this.inventory = Bukkit.createInventory(this, 54, MiniMessage.miniMessage().deserialize("<dark_gray>Ruoli del Clan"));
 
-        // Torna indietro
         inventory.setItem(0, new ItemBuilder(Material.ARROW)
                 .name("<yellow>Torna Indietro")
                 .build());
 
-        // Crea ruolo
         if (isLeader) {
             inventory.setItem(4, new ItemBuilder(Material.NAME_TAG)
                     .name("<aqua><bold>Crea Nuovo Ruolo")
@@ -61,6 +59,7 @@ public class RolesGui implements Gui {
 
         roleKeys.clear();
         roleKeys.addAll(clan.getRoles().keySet());
+        roleKeys.sort(Comparator.comparingInt((String key) -> clan.getRoles().get(key).getWeight()).reversed());
 
         int slot = 9;
         for (String roleKey : roleKeys) {
@@ -72,18 +71,12 @@ public class RolesGui implements Gui {
                     .name("<yellow>" + role.getName());
 
             List<String> lore = new ArrayList<>();
-            lore.add("<gray>Permessi: ");
-            
-            boolean canSetHome = role.has(ClanPermission.SET_HOME);
-            boolean canKick = role.has(ClanPermission.KICK);
-
-            lore.add((canSetHome ? "<green>✔" : "<red>✖") + " SET_HOME");
-            lore.add((canKick ? "<green>✔" : "<red>✖") + " KICK");
+            lore.add("<gray>Rango: <white>" + role.getWeight());
+            lore.add("<gray>Permessi configurabili da menu dedicato.");
 
             if (isLeader) {
                 lore.add("");
-                lore.add("<dark_gray>Click Sinistro: <gray>Attiva/Disattiva SET_HOME");
-                lore.add("<dark_gray>Shift-Click Sinistro: <gray>Attiva/Disattiva KICK");
+                lore.add("<dark_gray>Click: <gray>Apri gestione permessi e gerarchia");
             }
 
             builder.lore(lore);
@@ -91,7 +84,7 @@ public class RolesGui implements Gui {
         }
 
         for (int i = 0; i < inventory.getSize(); i++) {
-            if (inventory.getItem(i) == null && i < 9) { // Solo la prima riga
+            if (inventory.getItem(i) == null && i < 9) {
                 inventory.setItem(i, new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).name("<gray>").build());
             }
         }
@@ -109,7 +102,7 @@ public class RolesGui implements Gui {
             player.closeInventory();
             return;
         }
-        
+
         Clan clan = clanOpt.get();
         boolean isLeader = clan.getLeader().equals(player.getUniqueId());
 
@@ -121,13 +114,13 @@ public class RolesGui implements Gui {
         if (slot == 4 && isLeader) {
             player.closeInventory();
             player.sendMessage(MiniMessage.miniMessage().deserialize("<white>Scrivi in chat il nome del nuovo ruolo, oppure <red>annulla<white>."));
-            
+
             inputManager.requestInput(player, (input) -> {
                 if (input.equalsIgnoreCase("annulla")) {
                     player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Operazione annullata."));
                     return;
                 }
-                
+
                 ClanService.CreateRoleResult res = service.createRole(player.getUniqueId(), input);
                 switch (res) {
                     case OK -> player.sendMessage(messages.get("success.role-created", "role", input));
@@ -140,22 +133,12 @@ public class RolesGui implements Gui {
             return;
         }
 
-        // Click su un ruolo (Slot tra 9 e 53)
         if (slot >= 9 && slot < 9 + roleKeys.size() && isLeader) {
             String roleKey = roleKeys.get(slot - 9);
             ClanRole role = clan.getRoles().get(roleKey);
-            
+
             if (role != null) {
-                if (event.isShiftClick()) {
-                    // Toggle KICK
-                    boolean current = role.has(ClanPermission.KICK);
-                    service.setRolePermission(player.getUniqueId(), roleKey, ClanPermission.KICK, !current);
-                } else if (event.isLeftClick()) {
-                    // Toggle SET_HOME
-                    boolean current = role.has(ClanPermission.SET_HOME);
-                    service.setRolePermission(player.getUniqueId(), roleKey, ClanPermission.SET_HOME, !current);
-                }
-                open(player); // Aggiorna la GUI
+                new RoleManageGui(service, messages, inputManager, roleKey).open(player);
             }
         }
     }

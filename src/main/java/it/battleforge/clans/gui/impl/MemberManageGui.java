@@ -45,7 +45,6 @@ public class MemberManageGui implements Gui {
         boolean isLeader = clan.getLeader().equals(player.getUniqueId());
         boolean canKick = isLeader || service.hasPermission(player.getUniqueId(), ClanPermission.KICK);
 
-        // Non si può gestire se stessi in questa GUI
         if (targetId.equals(player.getUniqueId())) {
             new MembersGui(service, messages, inputManager).open(player);
             return;
@@ -56,19 +55,16 @@ public class MemberManageGui implements Gui {
 
         this.inventory = Bukkit.createInventory(this, 27, MiniMessage.miniMessage().deserialize("<dark_gray>Gestione " + target.getName()));
 
-        // Torna indietro
         inventory.setItem(0, new ItemBuilder(Material.ARROW)
                 .name("<yellow>Torna Indietro")
                 .build());
 
-        // Info giocatore (al centro sopra)
         inventory.setItem(4, new ItemBuilder(Material.PLAYER_HEAD)
                 .skullOwner(target)
                 .name("<yellow>" + target.getName())
                 .lore("<gray>Ruolo: <white>" + roleDisplay)
                 .build());
 
-        // Modifica ruolo (solo leader)
         if (isLeader) {
             inventory.setItem(11, new ItemBuilder(Material.NAME_TAG)
                     .name("<aqua><bold>Modifica Ruolo")
@@ -76,7 +72,6 @@ public class MemberManageGui implements Gui {
                     .build());
         }
 
-        // Espelli membro (se si ha il permesso e il target non è il leader)
         boolean isTargetLeader = clan.getLeader().equals(targetId);
         if (canKick && !isTargetLeader) {
             inventory.setItem(15, new ItemBuilder(Material.BARRIER)
@@ -111,20 +106,18 @@ public class MemberManageGui implements Gui {
         boolean isTargetLeader = clan.getLeader().equals(targetId);
 
         switch (slot) {
-            case 0 -> {
-                new MembersGui(service, messages, inputManager).open(player);
-            }
+            case 0 -> new MembersGui(service, messages, inputManager).open(player);
             case 11 -> {
                 if (isLeader) {
                     player.closeInventory();
                     player.sendMessage(MiniMessage.miniMessage().deserialize("<white>Scrivi in chat il nome del ruolo da assegnare a <yellow>" + Bukkit.getOfflinePlayer(targetId).getName() + "<white>, oppure scrivi <red>annulla<white>."));
-                    
+
                     inputManager.requestInput(player, (input) -> {
                         if (input.equalsIgnoreCase("annulla")) {
                             player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Operazione annullata."));
                             return;
                         }
-                        
+
                         ClanService.AssignRoleResult res = service.assignRole(player.getUniqueId(), targetId, input);
                         switch (res) {
                             case OK -> player.sendMessage(messages.get("success.role-set", "role", input));
@@ -144,12 +137,15 @@ public class MemberManageGui implements Gui {
                             targetPlayer.sendMessage(messages.get("error.kicked", "clan", clanOpt.get().getName()));
                         }
                         player.sendMessage(messages.get("success.player-kicked", "player", Bukkit.getOfflinePlayer(targetId).getName()));
-                        // Torna alla lista membri dopo il kick
                         new MembersGui(service, messages, inputManager).open(player);
                     } else if (res == ClanService.KickResult.NOT_LEADER) {
                         player.sendMessage(messages.get("error.not-leader"));
                     } else if (res == ClanService.KickResult.CANNOT_KICK_SELF) {
                         player.sendMessage(messages.get("error.cannot-kick-self"));
+                    } else if (res == ClanService.KickResult.TARGET_IS_LEADER) {
+                        player.sendMessage(messages.get("error.cannot-kick-leader"));
+                    } else if (res == ClanService.KickResult.INSUFFICIENT_ROLE_HIERARCHY) {
+                        player.sendMessage(messages.get("error.cannot-kick-higher-role"));
                     }
                 }
             }

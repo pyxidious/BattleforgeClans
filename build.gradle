@@ -12,6 +12,10 @@ repositories {
 
 dependencies {
     compileOnly 'io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT'
+
+    testImplementation 'io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT'
+    testImplementation platform('org.junit:junit-bom:5.11.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
 java {
@@ -22,4 +26,35 @@ java {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+        exceptionFormat 'short'
+    }
+}
+
+tasks.register('testUnit', Test) {
+    group = 'verification'
+    description = 'Esegue solo i test unitari (@Tag("unit")).'
+    useJUnitPlatform {
+        includeTags 'unit'
+    }
+}
+
+tasks.register('testWorkflow', Test) {
+    group = 'verification'
+    description = 'Esegue i test di workflow/integration (@Tag("workflow")).'
+    useJUnitPlatform {
+        includeTags 'workflow'
+    }
+}
+
+tasks.register('testProductionGate') {
+    group = 'verification'
+    description = 'Gate completo prima della produzione.'
+    dependsOn 'clean', 'testUnit', 'testWorkflow', 'build'
 }

@@ -4,8 +4,8 @@ Clans is a Paper 1.21.11 plugin that provides a modular foundation for a clan sy
 
 ## Requirements
 
-- Java 21  
-- Paper 1.21.11  
+- Java 21
+- Paper 1.21.11
 
 ## Current Structure
 
@@ -23,3 +23,51 @@ The actual clan logic will be implemented inside a service layer, keeping comman
 
 ```bash
 ./gradlew build
+```
+
+## Automated Tests
+
+### 1) Unit tests (fast)
+
+- Scope: model + core service rules.
+- Command (Gradle):
+
+```bash
+./gradlew testUnit
+```
+
+- Command (PowerShell):
+
+```powershell
+.\scripts\test-unit.ps1
+```
+
+### 2) Workflow tests (integration-level service flows)
+
+- Scope: end-to-end service flows (create/invite/accept/roles/kick/delete).
+- Command (Gradle):
+
+```bash
+./gradlew testWorkflow
+```
+
+- Command (PowerShell):
+
+```powershell
+.\scripts\test-workflow.ps1
+```
+
+### 3) Production gate
+
+- Scope: clean workspace + full test suite + build artifact.
+- Command (Gradle):
+
+```bash
+./gradlew testProductionGate
+```
+
+- Command (PowerShell):
+
+```powershell
+.\scripts\test-production-gate.ps1
+```
