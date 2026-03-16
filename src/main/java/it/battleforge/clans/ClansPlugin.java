@@ -2,6 +2,7 @@ package it.battleforge.clans;
 
 import it.battleforge.clans.command.ClansCommand;
 import it.battleforge.clans.message.MessageManager;
+import it.battleforge.clans.placeholder.ClansPlaceholderExpansion;
 import it.battleforge.clans.service.ClanService;
 import it.battleforge.clans.util.CombatManager;
 import org.bukkit.scheduler.BukkitTask;
@@ -66,6 +67,8 @@ public final class ClansPlugin extends JavaPlugin {
                 new it.battleforge.clans.listener.CombatListener(combatManager),
                 this
         );
+
+        registerPlaceholderExpansion();
 
         getLogger().info("Clans abilitato!");
     }
@@ -135,5 +138,15 @@ public final class ClansPlugin extends JavaPlugin {
             autoSaveTask.cancel();
             autoSaveTask = null;
         }
+    }
+
+    private void registerPlaceholderExpansion() {
+        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") == null) {
+            getLogger().info("PlaceholderAPI non trovato: i placeholder per LPC Chat Formatter non verranno registrati.");
+            return;
+        }
+
+        new ClansPlaceholderExpansion(this, clanService).register();
+        getLogger().info("PlaceholderAPI rilevato: placeholder clan registrati.");
     }
 }

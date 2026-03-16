@@ -25,6 +25,26 @@ The actual clan logic will be implemented inside a service layer, keeping comman
 ./gradlew build
 ```
 
+## Placeholder per LPC Chat Formatter
+
+Se `PlaceholderAPI` e `LPC Chat Formatter` sono installati, questo plugin registra automaticamente i placeholder:
+
+- `%battleforgeclans_clan_name%`
+- `%battleforgeclans_clan_role%`
+- `%battleforgeclans_in_clan%`
+
+Valori di fallback:
+
+- `clan_name`: stringa vuota se il player non e in un clan
+- `clan_role`: stringa vuota se il player non e in un clan
+- `in_clan`: `yes` oppure `no`
+
+Esempio formato LPC:
+
+```yaml
+format: '%vault_prefix% %player_name% &8[&6%battleforgeclans_clan_name%&8] &7[&b%battleforgeclans_clan_role%&7] &8» &f%message%'
+```
+
 ## Automated Tests
 
 ### 1) Unit tests (fast)

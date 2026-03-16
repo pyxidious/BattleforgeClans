@@ -2,6 +2,7 @@ name: Clans
 version: 1.0.0
 main: it.battleforge.clans.ClansPlugin
 api-version: '1.21'
+softdepend: [PlaceholderAPI]
 commands:
   clans:
     description: Comando principale del plugin Clans
